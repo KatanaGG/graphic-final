@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Festival Boss Raid</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="topbar">
+  Player: <span id="playerName">Guest</span>
+</div>
+
+<div class="boss-area">
+  <h1>Festival Boss</h1>
+
+  <div class="hp-bar">
+    <div id="hpFill"></div>
+  </div>
+
+  <p id="hpText">HP: ...</p>
+  <button id="attackBtn">TAP ATTACK ⚔️</button>
+</div>
+
+
+<!-- ✅ ใส่ script ตรงนี้ -->
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getDatabase,
+  ref,
+  onValue,
+  set
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBozGRm3KUwh4QqBuVtpVEOIf5u9WrxCRU",
+  authDomain: "graphic-final-event.firebaseapp.com",
+  databaseURL: "https://graphic-final-event-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "graphic-final-event",
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const hpText = document.getElementById("hpText");
+const attackBtn = document.getElementById("attackBtn");
+
+const bossRef = ref(db, "boss/hp");
+
+// realtime update
+onValue(bossRef, (snapshot) => {
+  hpText.innerText = "HP: " + snapshot.val();
+});
+
+// attack
+function attack() {
+  onValue(bossRef, (snapshot) => {
+    let hp = snapshot.val();
+    set(bossRef, hp - 10);
+  }, { onlyOnce: true });
+}
+
+attackBtn.onclick = attack;
+
+</script>
+
+</body>
+</html>
