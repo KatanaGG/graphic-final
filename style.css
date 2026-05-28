@@ -71,7 +71,8 @@ body {
   }
 
   .hp-bar{
-    width:300px;
+    width:85%;
+    max-width:300px;
     height:25px;
     background:#2a2a2a;
     margin:auto;
@@ -300,4 +301,32 @@ body {
 
   .attack-btn:active img {
     transform: scale(0.94);
+  }
+
+  /* ---- phone tuning (<=480px) ---- */
+  @media (max-width: 480px) {
+    .topbar { padding: 10px; }
+    .avatar { width: 34px; height: 34px; }
+    .my-code-label { font-size: 12px; }
+    .my-code { font-size: 18px; }
+
+    .logo { max-width: 240px; margin-top: 6px; }
+
+    .boss-wrapper {
+      width: 220px;
+      height: 220px;
+      margin: 10px auto;
+    }
+
+    .hp-bar { height: 22px; }
+
+    .attack-btn img { width: 160px; }
+
+    .quest-area { margin-top: 16px; padding: 12px; }
+    .quest-title { font-size: 14px; }
+    .code-input { font-size: 16px; }
+
+    .dmg-num { font-size: 26px; }
+
+    .modal-box { max-width: 86vw; padding: 24px 20px; }
   }
