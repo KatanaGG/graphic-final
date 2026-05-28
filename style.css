@@ -86,3 +86,92 @@ body {
     padding:15px;
     font-size:20px;
   }
+
+  /* ---- your shareable code in the topbar ---- */
+  .my-code-label {
+    font-size: 14px;
+    opacity: 0.85;
+  }
+
+  .my-code {
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: #ffd166;
+    margin-left: 6px;
+  }
+
+  /* ---- quest panel ---- */
+  .quest-area {
+    max-width: 340px;
+    margin: 24px auto 0;
+    padding: 16px;
+    background: #1b1b1b;
+    border: 1px solid #333;
+    border-radius: 12px;
+  }
+
+  .quest-title {
+    margin: 0 0 12px;
+    font-size: 15px;
+  }
+
+  .quest-input-row {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .code-input {
+    flex: 1;
+    max-width: 160px;
+    padding: 10px;
+    font-size: 18px;
+    text-align: center;
+    letter-spacing: 2px;
+    border: 2px solid #555;
+    border-radius: 8px;
+    background: #111;
+    color: #fff;
+  }
+
+  .code-input:focus {
+    outline: none;
+    border-color: #ffd166;
+  }
+
+  .code-btn {
+    margin: 0;
+    padding: 10px 16px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #111;
+    background: #ffd166;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .code-btn:active {
+    transform: translateY(1px);
+  }
+
+  .quest-msg {
+    min-height: 20px;
+    margin: 12px 0 4px;
+    font-size: 14px;
+  }
+
+  .quest-msg.ok  { color: #4ade80; }
+  .quest-msg.bad { color: #f87171; }
+
+  .quest-power {
+    margin: 4px 0 0;
+    font-size: 14px;
+    opacity: 0.9;
+  }
+
+  #powerText {
+    font-weight: bold;
+    color: #ffd166;
+  }
