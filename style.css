@@ -175,3 +175,59 @@ body {
     font-weight: bold;
     color: #ffd166;
   }
+
+  /* ---- victory popup ---- */
+  .modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.78);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal.show {
+    display: flex;
+  }
+
+  .modal-box {
+    background: #1b1b1b;
+    border: 2px solid #ffd166;
+    border-radius: 16px;
+    padding: 32px 28px;
+    max-width: 320px;
+    box-shadow: 0 0 40px rgba(255, 209, 102, 0.45);
+    animation: pop-in 0.3s ease-out;
+  }
+
+  .modal-box h2 {
+    margin: 0 0 12px;
+    color: #ffd166;
+  }
+
+  .modal-box p {
+    margin: 0 0 8px;
+    opacity: 0.9;
+  }
+
+  @keyframes pop-in {
+    0%   { transform: scale(0.7); opacity: 0; }
+    100% { transform: scale(1);   opacity: 1; }
+  }
+
+  .modal-btn {
+    margin-top: 16px;
+    padding: 12px 24px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #111;
+    background: #ffd166;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  .modal-btn:active {
+    transform: translateY(1px);
+  }

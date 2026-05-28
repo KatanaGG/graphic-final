@@ -40,6 +40,14 @@
   <p class="quest-power">พลังโจมตี: <span id="powerText">10</span> / ครั้ง</p>
 </div>
 
+<div id="victoryModal" class="modal">
+  <div class="modal-box">
+    <h2>🎉 ล้มบอสสำเร็จ!</h2>
+    <p>ทีมเราจัดการบอสได้แล้ว เก่งมาก!</p>
+    <button id="closeVictory" class="modal-btn">สู้อีกครั้ง ⚔️</button>
+  </div>
+</div>
+
 
 <!-- ✅ ใส่ script ตรงนี้ -->
 <script type="module">
@@ -65,7 +73,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-const MAX_HP = 1000;
+const MAX_HP = 15000;
 const BASE_DAMAGE = 10;
 const BONUS_PER_CODE = 10;
 const CODE_PREFIX = "068";
@@ -82,6 +90,9 @@ const codeInput = document.getElementById("codeInput");
 const codeBtn = document.getElementById("codeBtn");
 const questMsg = document.getElementById("questMsg");
 const powerText = document.getElementById("powerText");
+
+const victoryModal = document.getElementById("victoryModal");
+const closeVictoryBtn = document.getElementById("closeVictory");
 
 // ---------- player code system (persisted in localStorage) ----------
 function randomDigits(n) {
@@ -156,6 +167,8 @@ codeInput.addEventListener("keydown", (e) => {
 // ---------- boss ----------
 const bossRef = ref(db, "boss/hp");
 
+let bossDead = false;
+
 // realtime update
 onValue(bossRef, (snapshot) => {
   let hp = snapshot.val();
@@ -163,9 +176,31 @@ onValue(bossRef, (snapshot) => {
     set(bossRef, MAX_HP);
     return;
   }
-  hpText.innerText = "HP: " + hp;
-  hpFill.style.width = Math.max(0, (hp / MAX_HP) * 100) + "%";
+  hp = Math.max(0, hp);
+  hpText.innerText = "HP: " + hp.toLocaleString();
+  hpFill.style.width = (Math.min(hp, MAX_HP) / MAX_HP) * 100 + "%";
+
+  if (hp <= 0 && !bossDead) {
+    bossDead = true;
+    victoryModal.classList.add("show");
+  } else if (hp > 0 && bossDead) {
+    // boss was revived (maybe by another player) — close the popup
+    bossDead = false;
+    victoryModal.classList.remove("show");
+  }
 });
+
+// close victory popup -> revive boss. Only revive if it's still dead, so we
+// don't clobber a boss that another player already brought back.
+closeVictoryBtn.onclick = () => {
+  victoryModal.classList.remove("show");
+  onValue(bossRef, (snapshot) => {
+    const hp = snapshot.val();
+    if (hp === null || hp <= 0) {
+      set(bossRef, MAX_HP);
+    }
+  }, { onlyOnce: true });
+};
 
 function spawnDamage(amount) {
   const el = document.createElement("div");
@@ -185,11 +220,13 @@ function triggerShake() {
 
 // attack
 function attack() {
+  if (bossDead) return;   // can't hit a defeated boss
   const dmg = currentDamage();
   triggerShake();
   spawnDamage(dmg);
   onValue(bossRef, (snapshot) => {
     let hp = snapshot.val();
+    if (hp === null || hp <= 0) return;
     set(bossRef, Math.max(0, hp - dmg));
   }, { onlyOnce: true });
 }
