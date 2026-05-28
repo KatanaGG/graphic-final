@@ -16,6 +16,11 @@
 <div class="boss-area">
   <h1>Festival Boss</h1>
 
+  <div class="boss-wrapper">
+    <img id="bossImg" class="boss-img" src="assets/boss.png" alt="Festival Boss">
+    <div id="dmgLayer" class="dmg-layer"></div>
+  </div>
+
   <div class="hp-bar">
     <div id="hpFill"></div>
   </div>
@@ -49,21 +54,51 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+const MAX_HP = 1000;
+const DAMAGE = 10;
+
 const hpText = document.getElementById("hpText");
+const hpFill = document.getElementById("hpFill");
+const bossImg = document.getElementById("bossImg");
+const dmgLayer = document.getElementById("dmgLayer");
 const attackBtn = document.getElementById("attackBtn");
 
 const bossRef = ref(db, "boss/hp");
 
 // realtime update
 onValue(bossRef, (snapshot) => {
-  hpText.innerText = "HP: " + snapshot.val();
+  let hp = snapshot.val();
+  if (hp === null) {
+    set(bossRef, MAX_HP);
+    return;
+  }
+  hpText.innerText = "HP: " + hp;
+  hpFill.style.width = Math.max(0, (hp / MAX_HP) * 100) + "%";
 });
+
+function spawnDamage() {
+  const el = document.createElement("div");
+  el.className = "dmg-num";
+  el.textContent = "-" + DAMAGE;
+  el.style.left = (40 + Math.random() * 20) + "%";
+  dmgLayer.appendChild(el);
+  setTimeout(() => el.remove(), 800);
+}
+
+function triggerShake() {
+  bossImg.classList.remove("shake");
+  // force reflow so the animation restarts on rapid taps
+  void bossImg.offsetWidth;
+  bossImg.classList.add("shake");
+}
 
 // attack
 function attack() {
+  triggerShake();
+  spawnDamage();
   onValue(bossRef, (snapshot) => {
     let hp = snapshot.val();
-    set(bossRef, hp - 10);
+    set(bossRef, Math.max(0, hp - DAMAGE));
   }, { onlyOnce: true });
 }
 
