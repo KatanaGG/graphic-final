@@ -17,10 +17,10 @@ body {
   
   .boss-wrapper {
     position: relative;
-    width: 300px;
-    height: 300px;
-    max-width: 80vw;
-    margin: 16px auto;
+    width: 280px;
+    max-width: 78vw;
+    aspect-ratio: 2480 / 2235;
+    margin: 10px auto;
   }
 
   .boss-img {
@@ -88,6 +88,10 @@ body {
     background: linear-gradient(180deg, #ff7a7a 0%, #d62828 50%, #8b0000 100%);
     transition: width 0.2s ease-out;
   }
+
+  #hpText {
+    margin: 6px 0;
+  }
   
   button{
     margin-top:20px;
@@ -112,7 +116,7 @@ body {
   /* ---- quest panel ---- */
   .quest-area {
     max-width: 340px;
-    margin: 24px auto 0;
+    margin: 14px auto 0;
     padding: 16px;
     background: #1b1b1b;
     border: 1px solid #333;
@@ -252,9 +256,9 @@ body {
   .logo {
     display: block;
     width: 80%;
-    max-width: 320px;
+    max-width: 300px;
     height: auto;
-    margin: 10px auto 0;
+    margin: 6px auto 0;
   }
 
   .slash-fx {
@@ -283,7 +287,7 @@ body {
   }
 
   .attack-btn {
-    margin-top: 16px;
+    margin-top: 10px;
     padding: 0;
     background: none;
     border: none;
@@ -313,9 +317,8 @@ body {
     .logo { max-width: 240px; margin-top: 6px; }
 
     .boss-wrapper {
-      width: 220px;
-      height: 220px;
-      margin: 10px auto;
+      width: 210px;
+      margin: 8px auto;
     }
 
     .hp-bar { height: 22px; }
