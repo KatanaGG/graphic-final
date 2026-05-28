@@ -10,7 +10,8 @@
 <body>
 
 <div class="topbar">
-  Player: <span id="playerName">Guest</span>
+  <span class="my-code-label">🤝 โค้ดของคุณ (เอาไปแลกกับเพื่อน):</span>
+  <span id="myCode" class="my-code">068-----</span>
 </div>
 
 <div class="boss-area">
@@ -27,6 +28,16 @@
 
   <p id="hpText">HP: ...</p>
   <button id="attackBtn">TAP ATTACK ⚔️</button>
+</div>
+
+<div class="quest-area">
+  <p class="quest-title">⚔️ ใส่โค้ดเพื่อนเพื่อปลดพลังโจมตี</p>
+  <div class="quest-input-row">
+    <input id="codeInput" class="code-input" type="text" inputmode="numeric" maxlength="8" placeholder="068xxxxx">
+    <button id="codeBtn" class="code-btn">ใส่โค้ด</button>
+  </div>
+  <p id="questMsg" class="quest-msg"></p>
+  <p class="quest-power">พลังโจมตี: <span id="powerText">10</span> / ครั้ง</p>
 </div>
 
 
@@ -55,14 +66,94 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 const MAX_HP = 1000;
-const DAMAGE = 10;
+const BASE_DAMAGE = 10;
+const BONUS_PER_CODE = 10;
+const CODE_PREFIX = "068";
 
+// ---------- elements ----------
 const hpText = document.getElementById("hpText");
 const hpFill = document.getElementById("hpFill");
 const bossImg = document.getElementById("bossImg");
 const dmgLayer = document.getElementById("dmgLayer");
 const attackBtn = document.getElementById("attackBtn");
 
+const myCodeEl = document.getElementById("myCode");
+const codeInput = document.getElementById("codeInput");
+const codeBtn = document.getElementById("codeBtn");
+const questMsg = document.getElementById("questMsg");
+const powerText = document.getElementById("powerText");
+
+// ---------- player code system (persisted in localStorage) ----------
+function randomDigits(n) {
+  let s = "";
+  for (let i = 0; i < n; i++) s += Math.floor(Math.random() * 10);
+  return s;
+}
+
+// your own shareable code: 068 + 5 random digits, stable across reloads
+let myCode = localStorage.getItem("myCode");
+if (!myCode || !/^068\d{5}$/.test(myCode)) {
+  myCode = CODE_PREFIX + randomDigits(5);
+  localStorage.setItem("myCode", myCode);
+}
+myCodeEl.textContent = myCode;
+
+// codes already redeemed — unique only, so the same code can't be farmed
+let usedCodes = [];
+try {
+  usedCodes = JSON.parse(localStorage.getItem("usedCodes")) || [];
+} catch (e) {
+  usedCodes = [];
+}
+
+function currentDamage() {
+  return BASE_DAMAGE + BONUS_PER_CODE * usedCodes.length;
+}
+
+function updatePower() {
+  powerText.textContent = currentDamage();
+}
+updatePower();
+
+function showMsg(text, ok) {
+  questMsg.textContent = text;
+  questMsg.className = "quest-msg " + (ok ? "ok" : "bad");
+}
+
+function redeemCode() {
+  const code = codeInput.value.trim();
+
+  if (!/^\d{8}$/.test(code)) {
+    showMsg("โค้ดต้องเป็นตัวเลข 8 หลัก", false);
+    return;
+  }
+  if (!code.startsWith(CODE_PREFIX)) {
+    showMsg("โค้ดต้องขึ้นต้นด้วย " + CODE_PREFIX, false);
+    return;
+  }
+  if (code === myCode) {
+    showMsg("นี่คือโค้ดของคุณเอง ไปขอเพื่อน! 🙅", false);
+    return;
+  }
+  if (usedCodes.includes(code)) {
+    showMsg("โค้ดนี้ใช้ไปแล้ว ลองของคนอื่น", false);
+    return;
+  }
+
+  usedCodes.push(code);
+  localStorage.setItem("usedCodes", JSON.stringify(usedCodes));
+  updatePower();
+  showMsg("ปลดพลัง! ตอนนี้ตีครั้งละ " + currentDamage() +
+          " (โค้ดที่ใช้: " + usedCodes.length + ")", true);
+  codeInput.value = "";
+}
+
+codeBtn.onclick = redeemCode;
+codeInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") redeemCode();
+});
+
+// ---------- boss ----------
 const bossRef = ref(db, "boss/hp");
 
 // realtime update
@@ -76,10 +167,10 @@ onValue(bossRef, (snapshot) => {
   hpFill.style.width = Math.max(0, (hp / MAX_HP) * 100) + "%";
 });
 
-function spawnDamage() {
+function spawnDamage(amount) {
   const el = document.createElement("div");
   el.className = "dmg-num";
-  el.textContent = "-" + DAMAGE;
+  el.textContent = "-" + amount;
   el.style.left = (40 + Math.random() * 20) + "%";
   dmgLayer.appendChild(el);
   setTimeout(() => el.remove(), 800);
@@ -94,11 +185,12 @@ function triggerShake() {
 
 // attack
 function attack() {
+  const dmg = currentDamage();
   triggerShake();
-  spawnDamage();
+  spawnDamage(dmg);
   onValue(bossRef, (snapshot) => {
     let hp = snapshot.val();
-    set(bossRef, Math.max(0, hp - DAMAGE));
+    set(bossRef, Math.max(0, hp - dmg));
   }, { onlyOnce: true });
 }
 
