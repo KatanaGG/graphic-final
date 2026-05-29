@@ -141,6 +141,7 @@ body {
     display: flex;
     gap: 8px;
     justify-content: center;
+    align-items: center;
   }
 
   .code-input {
@@ -163,18 +164,23 @@ body {
 
   .code-btn {
     margin: 0;
-    padding: 10px 16px;
-    font-size: 16px;
-    font-weight: bold;
-    color: #111;
-    background: #ffd166;
+    padding: 0;
+    background: none;
     border: none;
-    border-radius: 8px;
     cursor: pointer;
+    line-height: 0;
+    flex: none;
   }
 
-  .code-btn:active {
-    transform: translateY(1px);
+  .code-btn img {
+    height: 48px;
+    width: auto;
+    display: block;
+    transition: transform 0.05s;
+  }
+
+  .code-btn:active img {
+    transform: scale(0.92);
   }
 
   .quest-msg {
