@@ -106,6 +106,12 @@ function randomDigits(n) {
   return s;
 }
 
+// wipe anything older (localStorage) versions of this game left on the device
+try {
+  localStorage.removeItem("myCode");
+  localStorage.removeItem("usedCodes");
+} catch (e) {}
+
 // your own shareable code: 068 + 5 random digits.
 // kept in memory ONLY — nothing is written to the player's device, so a
 // refresh gives a fresh code and resets power (no leftover data anywhere).
