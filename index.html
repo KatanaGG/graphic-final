@@ -10,9 +10,17 @@
 <body>
 
 <div class="topbar">
-  <img class="avatar" src="assets/player.png" alt="Player">
-  <span class="my-code-label">🤝 โค้ดของคุณ (เอาไปแลกกับเพื่อน):</span>
-  <span id="myCode" class="my-code">068-----</span>
+  <div class="player-card">
+    <div class="avatar-frame">
+      <img class="avatar" src="assets/player.png" alt="Player">
+      <span class="level-badge">LV <span id="levelNum">1</span></span>
+    </div>
+    <div class="player-info">
+      <div class="player-name">PLAYER</div>
+      <div class="player-id">ID: <span id="myCode">068-----</span></div>
+    </div>
+  </div>
+  <div class="topbar-hint">🤝 แลก ID กับเพื่อน<br>เพื่อเพิ่มพลัง</div>
 </div>
 
 <div class="boss-area">
@@ -95,6 +103,7 @@ const codeInput = document.getElementById("codeInput");
 const codeBtn = document.getElementById("codeBtn");
 const questMsg = document.getElementById("questMsg");
 const powerText = document.getElementById("powerText");
+const levelNum = document.getElementById("levelNum");
 
 const victoryModal = document.getElementById("victoryModal");
 const closeVictoryBtn = document.getElementById("closeVictory");
@@ -127,6 +136,7 @@ function currentDamage() {
 
 function updatePower() {
   powerText.textContent = currentDamage();
+  if (levelNum) levelNum.textContent = usedCodes.length + 1;
 }
 updatePower();
 
