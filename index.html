@@ -10,15 +10,17 @@
 <body>
 
 <div class="topbar">
+  <img class="avatar" src="assets/player.png" alt="Player">
   <span class="my-code-label">🤝 โค้ดของคุณ (เอาไปแลกกับเพื่อน):</span>
   <span id="myCode" class="my-code">068-----</span>
 </div>
 
 <div class="boss-area">
-  <h1>Festival Boss</h1>
+  <img class="logo" src="assets/logo.png" alt="Festival Boss Raid">
 
   <div class="boss-wrapper">
     <img id="bossImg" class="boss-img" src="assets/boss.png" alt="Festival Boss">
+    <img id="slashFx" class="slash-fx" src="assets/player-slash.png" alt="">
     <div id="dmgLayer" class="dmg-layer"></div>
   </div>
 
@@ -27,7 +29,7 @@
   </div>
 
   <p id="hpText">HP: ...</p>
-  <button id="attackBtn">TAP ATTACK ⚔️</button>
+  <button id="attackBtn" class="attack-btn"><img src="assets/attack-button.png" alt="TAP ATTACK"></button>
 </div>
 
 <div class="quest-area">
@@ -77,12 +79,15 @@ const MAX_HP = 15000;
 const BASE_DAMAGE = 10;
 const BONUS_PER_CODE = 10;
 const CODE_PREFIX = "068";
+const BOSS_NORMAL = "assets/boss.png";
+const BOSS_HIT = "assets/boss-hit.png";
 
 // ---------- elements ----------
 const hpText = document.getElementById("hpText");
 const hpFill = document.getElementById("hpFill");
 const bossImg = document.getElementById("bossImg");
 const dmgLayer = document.getElementById("dmgLayer");
+const slashFx = document.getElementById("slashFx");
 const attackBtn = document.getElementById("attackBtn");
 
 const myCodeEl = document.getElementById("myCode");
@@ -218,11 +223,33 @@ function triggerShake() {
   bossImg.classList.add("shake");
 }
 
+// swap to the "hit" sprite + white flash, then revert shortly after
+new Image().src = BOSS_HIT;   // preload so the first hit doesn't flicker
+let hitTimer = null;
+function showHit() {
+  bossImg.src = BOSS_HIT;
+  bossImg.classList.add("flash");
+  clearTimeout(hitTimer);
+  hitTimer = setTimeout(() => {
+    bossImg.src = BOSS_NORMAL;
+    bossImg.classList.remove("flash");
+  }, 150);
+}
+
+// quick slash effect overlay on the boss
+function showSlash() {
+  slashFx.classList.remove("show");
+  void slashFx.offsetWidth;
+  slashFx.classList.add("show");
+}
+
 // attack
 function attack() {
   if (bossDead) return;   // can't hit a defeated boss
   const dmg = currentDamage();
   triggerShake();
+  showHit();
+  showSlash();
   spawnDamage(dmg);
   onValue(bossRef, (snapshot) => {
     let hp = snapshot.val();
