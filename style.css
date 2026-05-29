@@ -255,9 +255,9 @@ body {
 
   /* ---- image assets ---- */
   .avatar {
-    width: 52px;
-    height: 52px;
-    border-radius: 12px;
+    width: 64px;
+    height: 64px;
+    border-radius: 14px;
     object-fit: cover;
     border: 2px solid #4fd1e0;
     box-shadow: 0 0 10px rgba(79, 209, 224, 0.55);
@@ -268,6 +268,7 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
+    margin-left: 20px;
     padding: 6px 16px 6px 6px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.12);
