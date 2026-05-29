@@ -99,28 +99,21 @@ const powerText = document.getElementById("powerText");
 const victoryModal = document.getElementById("victoryModal");
 const closeVictoryBtn = document.getElementById("closeVictory");
 
-// ---------- player code system (persisted in localStorage) ----------
+// ---------- player code system (in memory only, nothing saved to device) ----------
 function randomDigits(n) {
   let s = "";
   for (let i = 0; i < n; i++) s += Math.floor(Math.random() * 10);
   return s;
 }
 
-// your own shareable code: 068 + 5 random digits, stable across reloads
-let myCode = localStorage.getItem("myCode");
-if (!myCode || !/^068\d{5}$/.test(myCode)) {
-  myCode = CODE_PREFIX + randomDigits(5);
-  localStorage.setItem("myCode", myCode);
-}
+// your own shareable code: 068 + 5 random digits.
+// kept in memory ONLY — nothing is written to the player's device, so a
+// refresh gives a fresh code and resets power (no leftover data anywhere).
+let myCode = CODE_PREFIX + randomDigits(5);
 myCodeEl.textContent = myCode;
 
-// codes already redeemed — unique only, so the same code can't be farmed
+// codes redeemed this session — unique only, so the same code can't be farmed
 let usedCodes = [];
-try {
-  usedCodes = JSON.parse(localStorage.getItem("usedCodes")) || [];
-} catch (e) {
-  usedCodes = [];
-}
 
 function currentDamage() {
   return BASE_DAMAGE + BONUS_PER_CODE * usedCodes.length;
@@ -157,7 +150,6 @@ function redeemCode() {
   }
 
   usedCodes.push(code);
-  localStorage.setItem("usedCodes", JSON.stringify(usedCodes));
   updatePower();
   showMsg("ปลดพลัง! ตอนนี้ตีครั้งละ " + currentDamage() +
           " (โค้ดที่ใช้: " + usedCodes.length + ")", true);
